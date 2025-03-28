@@ -94,6 +94,6 @@ Para experimentar e iterar rápidamente, usarás un cuaderno con código de Pyth
 
 Si has terminado de explorar Servicios de Azure AI, debes eliminar los recursos que has creado en este ejercicio para evitar incurrir en costes innecesarios de Azure.
 
-1. Vuelve a la pestaña del explorador que contiene Azure Portal (o vuelve a abrir [Azure Portal](https://portal.azure.com?azure-portal=true) en una nueva pestaña del explorador) y visualiza el contenido del grupo de recursos donde implementaste los recursos usados en este ejercicio.
+1. Vuelve a la pestaña del explorador que contiene Azure Portal (o vuelve a abrir [Azure Portal](https://portal.azure.com?azure-portal=true) en una nueva pestaña del explorador) y visualiza el contenido del grupo de recursos donde implementó los recursos usados en este ejercicio.
 1. Selecciona **Eliminar grupo de recursos** en la barra de herramientas.
 1. Escribe el nombre del grupo de recursos y confirma que deseas eliminarlo.
