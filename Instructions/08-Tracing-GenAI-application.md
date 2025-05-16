@@ -24,7 +24,7 @@ Para completar las tareas de este ejercicio, necesitas:
 
 ### A Creación de un proyecto y un centro de Fundición de IA
 
-Para configurar rápidamente un centro y un proyecto, se proporcionan instrucciones sencillas para usar la interfaz de usuario del Portal de la Fundición de IA de Azure.
+Para configurar rápidamente un centro y un proyecto, se proporcionan instrucciones sencillas para usar la interfaz de usuario del portal de la Fundición de IA de Azure.
 
 1. Ve al portal de la Fundición de IA de Azure: Abre [https://ai.azure.com](https://ai.azure.com).
 1. Inicie sesión con sus credenciales de Azure.
@@ -34,12 +34,9 @@ Para configurar rápidamente un centro y un proyecto, se proporcionan instruccio
     1. Escribe un **nombre de proyecto**.
     1. Cuando se te solicite, **crea un nuevo centro**.
     1. Personalización del centro:
-
         1. Elige la **suscripción**, el **grupo de recursos** la **ubicación**, etc.
         1. Conecta un **nuevo recurso de Servicios de Azure AI** (omite la búsqueda por IA).
-
     1. Revise y seleccione **Crear**.
-
 1. **Espera a que se complete la implementación** (aproximadamente de 1 a 2 minutos).
 
 ### B. Implementación de un modelo
@@ -138,7 +135,7 @@ Ahora ejecutarás varios scripts que envían indicaciones diferentes al modelo i
 
     El modelo generará una respuesta, que se capturará con Application Insights para su posterior análisis. Vamos a variar nuestras indicaciones para explorar sus efectos.
 
-1. **Abre y revisa el script**, donde la indicación indica al modelo que **solo responda con una oración y una lista**:
+1. **Abre y revisa el script**, donde la solicitud indica al modelo que **solo responda con una oración y una lista**:
 
     ```
    code short-prompt.py
