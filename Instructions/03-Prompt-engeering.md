@@ -1,25 +1,30 @@
 ---
 lab:
   title: Exploración de la ingeniería de indicaciones con Prompty
+  description: Aprende a usar Prompty para probar y mejorar rápidamente los distintos mensajes con el modelo de lenguaje y asegúrate de que se construyan y orquesten para obtener mejores resultados.
 ---
 
 ## Exploración de la ingeniería de indicaciones con Prompty
 
+Este ejercicio dura aproximadamente **45** minutos.
+
+> **Nota**: en este ejercicio se presupone que tienes algún conocimiento de Fundición de IA de Azure, por lo que algunas instrucciones son intencionadamente menos detalladas para fomentar la exploración más activa y el aprendizaje práctico.
+
+## Introducción
+
 Durante la generación de ideas, puede que quieras probar y mejorar rápidamente las distintas indicaciones con el modelo de lenguaje. Hay varias maneras de abordar la ingeniería de indicaciones, a través del área de juegos en el Portal de la Fundición de IA de Azure o mediante Prompty para obtener un enfoque más orientado al código.
 
-En este ejercicio, explorarás la ingeniería de indicaciones con Prompty en Visual Studio Code mediante un modelo implementado a través de Fundición de IA de Azure.
+En este ejercicio, explorarás la ingeniería de indicaciones con Prompty en Azure Cloud Shell mediante un modelo implementado a través de Fundición de IA de Azure.
 
-Este ejercicio dura aproximadamente **40** minutos.
+## Configuración del entorno
 
-## Escenario
+Para completar las tareas de este ejercicio, necesitas:
 
-Imagina que quieres crear una aplicación para ayudar a los estudiantes a aprender a codificar en Python. En la aplicación, quieres un tutor automatizado que pueda ayudar a los estudiantes a escribir y evaluar código. Sin embargo, no quieres que la aplicación de chat proporcione únicamente todas las respuestas. Quieres que los estudiantes reciban sugerencias personalizadas que les animen a pensar en cómo continuar.
+- Un centro de Fundición de IA de Azure,
+- Un proyecto de Fundición de IA de Azure,
+- Un modelo implementado (como GPT-4o).
 
-Has seleccionado un modelo GPT-4 con el que empezar a experimentar. Ahora quieres aplicar la ingeniería de indicaciones para guiar el comportamiento del chat para que sea un tutor que genera sugerencias personalizadas.
-
-Empecemos implementando los recursos necesarios para trabajar con este modelo en el Portal de la Fundición de IA de Azure.
-
-## Creación de un centro y un proyecto de Azure AI
+### Creación de un centro y un proyecto de Azure AI
 
 > **Nota**: si ya tienes un centro y un proyecto de Azure AI, puedes omitir este procedimiento y usar el proyecto existente.
 
@@ -87,7 +92,7 @@ Puedes crear manualmente un centro y un proyecto de Azure AI a través del Porta
 
 1. Copia estos valores, ya que se usarán más adelante.
    
-## Configuración del entorno de desarrollo local
+### Configuración del entorno de desarrollo local
 
 Para experimentar e iterar rápidamente, usarás Prompty en Visual Studio (VS) Code. Vamos a preparar VS Code para su uso para la generación de ideas local.
 
