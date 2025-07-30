@@ -1,19 +1,20 @@
 ---
 lab:
   title: Supervisión de una aplicación de IA generativa
+  description: Aprende a supervisar las interacciones con el modelo implementado y obtén información sobre cómo optimizar su uso con la aplicación de IA generativa.
 ---
 
 # Supervisión de una aplicación de IA generativa
 
 Este ejercicio dura aproximadamente **30** minutos.
 
-> **Nota**: En este ejercicio se presupone cierta familiaridad con Fundición de IA de Azure, por lo que algunas instrucciones son intencionadamente menos detalladas para fomentar la exploración más activa y el aprendizaje práctico.
+> **Nota**: en este ejercicio se presupone que tienes algún conocimiento de Fundición de IA de Azure, por lo que algunas instrucciones son intencionadamente menos detalladas para fomentar la exploración más activa y el aprendizaje práctico.
 
 ## Introducción
 
-En este ejercicio, habilitarás la supervisión de una aplicación de finalización de chat y verás su rendimiento en Azure Monitor. Interactúas con el modelo implementado para generar datos, ver los datos generados a través del panel de aplicaciones de Insights para IA generativa y configurar alertas para ayudar a optimizar la implementación del modelo.
+En este ejercicio, habilitarás la supervisión de una aplicación de finalización de chat y verás su rendimiento en Azure Monitor. Interactuarás con el modelo implementado para generar datos, verás los datos generados a través del panel de información para aplicaciones de IA generativa y configurarás alertas para ayudar a optimizar la implementación del modelo.
 
-## 1. Configuración del entorno
+## Configuración del entorno
 
 Para completar las tareas de este ejercicio, necesitas:
 
@@ -22,55 +23,62 @@ Para completar las tareas de este ejercicio, necesitas:
 - Un modelo implementado (como GPT-4o),
 - Un recurso de Application Insights conectado.
 
-### A Creación de un proyecto y un centro de Fundición de IA
+### Creación de un centro y un proyecto de Fundición de IA de Azure
 
 Para configurar rápidamente un centro y un proyecto, se proporcionan instrucciones sencillas para usar la interfaz de usuario del Portal de la Fundición de IA de Azure.
 
-1. Ve al portal de la Fundición de IA de Azure: Abre [https://ai.azure.com](https://ai.azure.com).
-1. Inicie sesión con sus credenciales de Azure.
-1. Crear un proyecto:
-    1. Ve a **Todos los centros y proyectos**.
-    1. Selecciona **+ Nuevo proyecto**.
-    1. Escribe un **nombre de proyecto**.
-    1. Cuando se te solicite, **crea un nuevo centro**.
-    1. Personalización del centro:
+1. En un explorador web, abre el [Portal de la Fundición de IA de Azure](https://ai.azure.com) en `https://ai.azure.com` e inicia sesión con tus credenciales de Azure.
+1. En la página principal, selecciona **+Crear proyecto**.
+1. En el asistente para **crear un proyecto**, escribe un nombre válido y si se te sugiere un centro existente, elige la opción para crear uno nuevo. A continuación, revisa los recursos de Azure que se crearán automáticamente para admitir el centro y el proyecto.
+1. Selecciona **Personalizar** y especifica la siguiente configuración para el centro:
+    - **Nombre del centro**: *un nombre válido para el centro*
+    - **Suscripción**: *suscripción a Azure*
+    - **Grupo de recursos**: *crea o selecciona un grupo de recursos*
+    - **Ubicación**: selecciona **Ayudarme a elegir** y, a continuación, selecciona **gpt-4o** en la ventana Asistente de ubicación y usa la región recomendada\*
+    - **Conectar Servicios de Azure AI o Azure OpenAI**: *crea un nuevo recurso de servicios de IA*
+    - **Conectar Búsqueda de Azure AI**: omite la conexión
 
-        1. Elige la **suscripción**, el **grupo de recursos** la **ubicación**, etc.
-        1. Conecta un **nuevo recurso de Servicios de Azure AI** (omite la búsqueda por IA).
+    > \* Los recursos de Azure OpenAI están restringidos por cuotas de modelo regionales. En caso de que se alcance un límite de cuota más adelante en el ejercicio, es posible que tengas que crear otro recurso en otra región.
 
-    1. Revise y seleccione **Crear**.
+1. Selecciona **Siguiente** y revisa tu configuración. Luego, selecciona **Crear** y espera a que se complete el proceso.
 
-1. **Espera a que se complete la implementación** (aproximadamente de 1 a 2 minutos).
+### Implementación de un modelo
 
-### B. Implementación de un modelo
-
-Para generar datos que puedas supervisar, primero debes implementar un modelo e interactuar con él. En las instrucciones se te pide que implementes un modelo GPT-4o, pero **puedes usar cualquier modelo** de la colección de Azure OpenAI Service que tienes disponible.
+Para generar datos que puedas supervisar, primero deberás implementar un modelo e interactuar con él. En las instrucciones se te pide que implementes un modelo GPT-4o, pero **puedes usar cualquier modelo** de la colección de Azure OpenAI Service que esté disponible.
 
 1. En el menú de la izquierda, en la sección **Mis recursos**, selecciona la página **Modelos y puntos de conexión**.
-1. Implementa un **modelo base** y elige **gpt-4o**.
-1. **Personaliza los detalles de implementación**.
-1. Establece la **capacidad** en **5000 tokens por minuto (TPM).**
+1. En el menú **Implementar modelo**, selecciona **Implementar modelo base**.
+1. Selecciona el modelo **gpt-4o** en la lista e impleméntalo con la siguiente configuración; para ello, selecciona **Personalizar** en los detalles de implementación:
+    - **Nombre de implementación**: *nombre válido para la implementación de modelo*
+    - **Tipo de implementación**: estándar
+    - **Actualización automática de la versión**: habilitado
+    - **** Versión del modelo: *selecciona la versión disponible más reciente*
+    - **Recurso de IA conectado**: *selecciona tu conexión de recursos de Azure OpenAI*
+    - **Límite de frecuencia de tokens por minuto (miles)**: 1K
+    - **Filtro de contenido**: DefaultV2
+    - **Habilitación de la cuota dinámica**: deshabilitada
 
-El centro y el proyecto están listos, con todos los recursos de Azure necesarios aprovisionados de forma automática.
+    > **Nota**: reducir el TPM ayuda a evitar el uso excesivo de la cuota disponible en la suscripción que está usando. 1000 TPM es suficiente para los datos que se usan en este ejercicio. Si la cuota disponible es inferior a esta, podrás completar el ejercicio, pero se pueden producir errores si se supera el límite de velocidad.
 
-### C. Conectar Application Insights
+1. Espera a que la implementación se complete.
 
-Conecta Application Insights al proyecto en Fundición de IA de Azure para iniciar los datos recopilados para la supervisión.
+### Conectar Application Insights
 
-1. Abre el proyecto en el portal de la Fundición de IA de Azure.
-1. En el menú de la izquierda, selecciona la página **Seguimiento**.
+Conecta Application Insights al proyecto en Fundición de IA de Azure para empezar a recopilar los datos para la supervisión.
+
+1. Usa el menú de la izquierda y selecciona la página **Seguimiento**.
 1. **Crea un nuevo** recurso de Application Insights para conectarse a la aplicación.
-1. Escribe un **nombre del recurso de Application Insights**.
+1. Escribe un nombre de recurso de Application Insights y selecciona **Crear**.
 
 Application Insights ahora está conectado al proyecto y los datos comenzarán a recopilarse para su análisis.
 
-## 2. Interacción con un modelo implementado
+## Interacción con un modelo implementado
 
-Interactuarás con el modelo implementado de manera programática, mediante la configuración de una conexión al proyecto de Fundición de IA de Azure con el uso de Azure Cloud Shell. Esto te permitirá enviar un mensaje al modelo y generar datos de supervisión.
+Interactuarás con el modelo implementado mediante programación configurando una conexión al proyecto de Fundición de IA de Azure con Azure Cloud Shell. Esto te permitirá enviar una indicación al modelo y generar datos de supervisión.
 
-### A Conexión con un modelo mediante Cloud Shell
+### Conexión con un modelo mediante Cloud Shell
 
-Empieza por recuperar la información necesaria para autenticarse para interactuar con el modelo. A continuación, accederás a Azure Cloud Shell y actualizarás la configuración para enviar las indicaciones proporcionadas al propio modelo implementado.
+Empieza por recuperar la información necesaria para autenticarte para interactuar con el modelo. A continuación, accederás a Azure Cloud Shell y actualizarás la configuración para enviar las indicaciones proporcionadas a tu propio modelo implementado.
 
 1. En el Portal de la Fundición de IA de Azure, mira la página **Información general** del proyecto.
 1. En el área **Detalles del proyecto**, anota la **Cadena de conexión del proyecto**.
@@ -82,19 +90,21 @@ Empieza por recuperar la información necesaria para autenticarse para interactu
 
     **<font color="red">Asegúrate de que has cambiado a la versión clásica de Cloud Shell antes de continuar.</font>**
 
-1. En el panel de Cloud Shell, escribe y ejecuta el siguiente comando:
+1. En el panel de Cloud Shell, escribe y ejecuta los comandos siguientes:
 
     ```
-    rm -r mslearn-ai-foundry -f
+    rm -r mslearn-genaiops -f
     git clone https://github.com/microsoftlearning/mslearn-genaiops mslearn-genaiops
     ```
 
     Este comando clona el repositorio de GitHub que contiene los archivos de código de este ejercicio.
 
+    > **Sugerencia**: al pegar comandos en CloudShell, la salida puede ocupar una gran cantidad del búfer de pantalla. Puedes despejar la pantalla al escribir el comando `cls` para que te resulte más fácil centrarte en cada tarea.
+
 1. Una vez clonado el repo, ve a la carpeta que contiene los archivos de código de aplicación:  
 
     ```
-   cd mslearn-ai-foundry/Files/07
+   cd mslearn-genaiops/Files/07
     ```
 
 1. En el panel de la línea de comandos de Cloud Shell, escribe el siguiente comando para instalar las bibliotecas que necesitas:
@@ -115,14 +125,14 @@ Empieza por recuperar la información necesaria para autenticarse para interactu
 
 1. En el archivo de código:
 
-    1. Reemplaza el marcador de posición **your_project_connection_string** por la cadena de conexión del proyecto (copiado de la página **Información general** del proyecto en el portal de la Fundición de IA de Azure).
-    1. Reemplaza el marcador de posición **your_model_deployment** por el nombre que asignaste a la implementación del modelo gpt-4o (de manera predeterminada `gpt-4o`).
+    1. Reemplaza el marcador de posición **your_project_connection_string** por la cadena de conexión del proyecto (copiado de la página **Información general** del proyecto en el Portal de la Fundición de IA de Azure).
+    1. Reemplaza el marcador de posición **your_model_deployment** por el nombre que asignaste a la implementación del modelo GPT-4o (de manera predeterminada `gpt-4o`).
 
-1. *Después* de reemplazar los marcadores de posición, en el editor de código, usa el comando **CTRL+S** o **haz clic con el botón derecho y luego en Guardar** para **guardar los cambios**.
+1. *Después* de reemplazar el marcador de posición, en el editor de código, usa el comando **CTRL+S** o **clic con el botón derecho > Guardar** para **guardar los cambios** y, a continuación, usa el comando **CTRL+Q** o **clic con el botón derecho > Salir** para cerrar el editor de código mientras mantienes abierta la línea de comandos de Cloud Shell.
 
-### B. Envío de indicaciones al modelo implementado
+### Envío de indicaciones al modelo implementado
 
-Ahora ejecutarás varios scripts que envían indicaciones diferentes al modelo implementado. Estas interacciones generan datos que puedes observar más adelante en Azure Monitor.
+Ahora ejecutarás varios scripts que envían indicaciones diferentes al modelo implementado. Estas interacciones generan datos que podrás observar más adelante en Azure Monitor.
 
 1. Ejecuta el siguiente comando para **ver el primer script** que se ha proporcionado:
 
@@ -138,7 +148,7 @@ Ahora ejecutarás varios scripts que envían indicaciones diferentes al modelo i
 
     El modelo generará una respuesta, que se capturará con Application Insights para su posterior análisis. Vamos a variar nuestras indicaciones para explorar sus efectos.
 
-1. **Abre y revisa el script**, donde la indicación indica al modelo que **solo responda con una oración y una lista**:
+1. **Abre y revisa el script**, donde la indicación indica al modelo que **responda solo con una frase y una lista**:
 
     ```
    code short-prompt.py
@@ -150,7 +160,7 @@ Ahora ejecutarás varios scripts que envían indicaciones diferentes al modelo i
    python short-prompt.py
     ```
 
-1. El siguiente script tiene un objetivo similar, pero incluye las instrucciones para la salida en el **mensaje del sistema** en lugar del mensaje de usuario:
+1. El siguiente script tiene un objetivo similar, pero incluye las instrucciones para la salida en el **mensaje del sistema** en lugar del mensaje del usuario:
 
     ```
    code system-prompt.py
@@ -162,13 +172,13 @@ Ahora ejecutarás varios scripts que envían indicaciones diferentes al modelo i
    python system-prompt.py
     ```
 
-1. Por último, vamos a intentar desencadenar un error mediante la ejecución de una indicación con **demasiados tokens**:
+1. Por último, vamos a intentar desencadenar un error ejecutando una indicación con **demasiados tokens**:
 
     ```
    code error-prompt.py
     ```
 
-1. **Ejecuta el script** escribiendo el siguiente comando en la línea de comandos: ¡Ten en cuenta que es muy **probable que experimentes un error!**
+1. **Ejecuta el script** escribiendo el comando siguiente en la línea de comandos. Ten en cuenta que es muy **probable que se produzca un error.**
 
     ```
    python error-prompt.py
@@ -176,77 +186,77 @@ Ahora ejecutarás varios scripts que envían indicaciones diferentes al modelo i
 
 Ahora que has interactuado con el modelo, puedes revisar los datos en Azure Monitor.
 
-> **Nota**: Los datos de supervisión pueden tardar unos minutos en mostrarse en Azure Monitor.
+> **Nota**: los datos de supervisión pueden tardar unos minutos en mostrarse en Azure Monitor.
 
-## 4. Visualización de datos de supervisión en Azure Monitor
+## Visualización de datos de supervisión en Azure Monitor
 
 Para ver los datos recopilados de las interacciones del modelo, tendrás acceso al panel que se vincula a un libro de Azure Monitor.
 
-### A Ve a Azure Monitor en el portal de la Fundición de IA de Azure
+### Ve a Azure Monitor desde el Portal de la Fundición de IA de Azure
 
-1. Ve a la pestaña del explorador con el **portal de la Fundición de IA de Azure** abierto.
+1. Ve a la pestaña del explorador con el **Portal de la Fundición de IA de Azure** abierto.
 1. Usa el menú de la izquierda y selecciona **Seguimiento**.
-1. Selecciona el vínculo en la parte superior, que indica **Consulta el panel de aplicaciones de Insights para IA generativa**. El vínculo abrirá Azure Monitor en una nueva pestaña.
+1. Selecciona el vínculo en la parte superior, que indica **Consultar el panel Información para aplicaciones de IA generativa**. El vínculo abrirá Azure Monitor en una nueva pestaña.
 1. Revisa la **información general** que proporciona datos resumidos de las interacciones con el modelo implementado.
 
-## 5. Interpretación de las métricas de supervisión en Azure Monitor
+## Interpretación de las métricas de supervisión en Azure Monitor
 
-Ahora es el momento de profundizar en los datos y empezar a interpretar lo que te dice.
+Ahora es el momento de profundizar en los datos y empezar a interpretar lo que dicen.
 
-### A Revisión del uso del token
+### Revisión del uso de tokens
 
-Céntrate primero en la sección de **uso de tokens** y revisa las siguientes métricas:
+Céntrate primero en la sección **uso de tokens** y revisa las métricas siguientes:
 
-- **Tokens de indicación**: El número total de tokens usados en la entrada (las indicaciones que enviaste) en todas las llamadas del modelo.
+- **Tokens de indicaciones**: el número total de tokens usados en la entrada (las indicaciones enviadas) en todas las llamadas del modelo.
 
-> Piensa en esto como el *coste de hacer una pregunta* al modelo.
+> Piensa en esto como el *coste de plantear* al modelo una pregunta.
 
-- **Tokens de finalización**: El número de tokens que devolvió el modelo como salida, básicamente la longitud de las respuestas.
+- **Tokens de finalización**: el número de tokens que devolvió el modelo como salida, básicamente la longitud de las respuestas.
 
-> Los tokens de finalización generados suelen representar la mayor parte del uso y el coste del token, especialmente para respuestas largas o detalladas.
+> Los tokens de finalización generados suelen representar la mayor parte del uso y el coste de los tokens, especialmente para respuestas largas o detalladas.
 
-- **Total de tokens**: Los tokens de solicitud totales combinados y los tokens de finalización.
+- **Total de tokens**: los tokens de indicación totales combinados y los tokens de finalización.
 
 > Métrica más importante para la facturación y el rendimiento, ya que impulsa la latencia y el coste.
 
-- **Total de llamadas**: El número de solicitudes de inferencia independientes, que es la cantidad de veces que se llamó al modelo.
+- **Total de llamadas**: número de solicitudes de inferencia independientes, que es la cantidad de veces que se llamó al modelo.
 
 > Resulta útil para analizar el rendimiento y comprender el coste medio por llamada.
 
-### B. Comparación de las solicitudes individuales
+### Comparación de las indicaciones individuales
 
-Desplázate hacia abajo para buscar los **intervalos de IA generativa**, que se visualizan como una tabla en la que cada solicitud se representa como una nueva fila de datos. Revisa y compara el contenido de las siguientes columnas:
+Desplázate hacia abajo para buscar los **intervalos de IA generativa**, que se visualizan como una tabla en la que cada indicación se representa como una nueva fila de datos. Revisa y compara el contenido de las columnas siguientes:
 
-- **Estado**: Indica si una llamada de modelo se realizó correctamente o no.
+- **Estado**: indica si una llamada de modelo se realizó correctamente o no.
 
-> Úsalo para identificar solicitudes problemáticas o errores de configuración. Es probable que se produzca un error en la última solicitud porque la misma era demasiado larga.
+> Úsalo para identificar indicaciones problemáticas o errores de configuración. Es probable que se produzca un error en la última indicación porque era demasiado larga.
 
-- **Duración**: Muestra cuánto tiempo tardó el modelo en responder, en milisegundos.
+- **Duración**: muestra cuánto tiempo tardó el modelo en responder, en milisegundos.
 
-> Compara entre filas para explorar qué patrones de solicitud dan lugar a tiempos de procesamiento más largos.
+> Compara entre filas para explorar qué patrones de indicación dan lugar a tiempos de procesamiento más largos.
 
-- **Entrada**: Muestra el mensaje de usuario que se envió al modelo.
+- **Entrada**: muestra el mensaje del usuario que se envió al modelo.
 
-> Usa esta columna para evaluar qué formulaciones de solicitud son eficaces o problemáticas.
+> Usa esta columna para evaluar qué formulaciones de indicaciones son eficaces o problemáticas.
 
-- **Sistema**: Muestra el mensaje del sistema usado en la solicitud (si hay alguna).
+- **Sistema**: muestra el mensaje del sistema usado en la indicación (si hay alguno).
 
-> Compara las entradas para evaluar el impacto del uso o el cambio de mensajes del sistema.
+> Compara las entradas para evaluar el impacto del uso o el cambio de los mensajes del sistema.
 
-- **Salida**: Contiene la respuesta del modelo.
+- **Salida**: contiene la respuesta del modelo.
 
 > Úsalo para evaluar el nivel de detalle, la relevancia y la coherencia. Especialmente en relación con los recuentos de tokens y la duración.
 
-## 6. (OPCIONAL) Creación de una alerta
+## (OPCIONAL) Creación de una alerta
 
-Si tienes tiempo adicional, intenta configurar una alerta para que recibas una notificación cuando la latencia del modelo supere un umbral determinado. Se trata de un ejercicio diseñado para desafiarte, lo que significa que las instrucciones son intencionadamente menos detalladas.
+Si tienes más tiempo, intenta configurar una alerta para que se te notifique cuando la latencia del modelo supere un umbral determinado. Se trata de un ejercicio diseñado para representar un desafío, lo que significa que las instrucciones son intencionadamente menos detalladas.
 
-- En Azure Monitor, crea una **nueva regla de alertas** para el proyecto y el modelo de Fundición de IA de Azure.
+- En Azure Monitor, crea una **nueva regla de alertas** para el proyecto y el modelo de la Fundición de IA de Azure.
 - Elige una métrica como **Duración de la solicitud (ms)** y define un umbral (por ejemplo, mayor que 4000 ms).
-- Crea un **nuevo grupo de acción** para definir cómo se te notificará.
+- Crea un **nuevo grupo de acciones** para definir cómo se te notificará.
 
 Las alertas te ayudan a prepararte para la producción mediante el establecimiento de una supervisión proactiva. Las alertas que configures dependerán de las prioridades del proyecto y de cómo el equipo haya decidido medir y mitigar los riesgos.
 
 ## Dónde encontrar otros laboratorios
 
-Puedes explorar laboratorios y ejercicios adicionales en el [Portal de Aprendizaje de la Fundición de IA de Azure](https://ai.azure.com) o consultar la **sección de laboratorio** del curso para ver otras actividades disponibles.
+Puedes explorar laboratorios y ejercicios adicionales en el [Portal de aprendizaje de la Fundición de IA de Azure](https://ai.azure.com) o consultar la **sección de laboratorio** del curso para ver otras actividades disponibles.
