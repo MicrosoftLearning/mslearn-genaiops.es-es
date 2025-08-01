@@ -107,9 +107,9 @@ La precisión de las métricas de referencia se calcula en función de los conju
 
 Para experimentar e iterar rápidamente, usarás un conjunto de scripts de Python en Cloud Shell.
 
-1. En el Portal de la Fundición de IA de Azure, mira la página **Información general** del proyecto.
-1. En el área **Detalles del proyecto**, anota la **Cadena de conexión del proyecto**.
-1. Guarda la cadena en un Bloc de notas. Usarás esta cadena de conexión para conectarte al proyecto en una aplicación cliente.
+1. De nuevo en la pestaña de Azure Portal, vaya al grupo de recursos creado anteriormente por el script de implementación y seleccione el recurso **Fundición de IA de Azure**.
+1. En la página **Información general** del recurso, seleccione **Haga clic aquí para ver los puntos de conexión** y copie el punto de conexión de API de Fundición de IA.
+1. Guarde el punto de conexión en un cuaderno. Lo usará para conectarse al proyecto en una aplicación cliente.
 1. De nuevo en la pestaña de Azure Portal, abre Cloud Shell si lo cerraste antes y ejecuta el siguiente comando para ir a la carpeta que tiene los archivos de código usados en este ejercicio:
 
      ```powershell
@@ -132,7 +132,7 @@ Para experimentar e iterar rápidamente, usarás un conjunto de scripts de Pytho
 
     El archivo se abre en un editor de código.
 
-1. En el archivo de código, reemplaza el marcador de posición **your_project_connection_string** por la cadena de conexión del proyecto (copiada de la página **Información general** del proyecto en el Portal de la Fundición de IA de Azure). Observa que el primer y segundo modelo usado en el ejercicio son **gpt-4o** y **gpt-4o-mini**, respectivamente.
+1. En el archivo de código, reemplace el marcador de posición **your_project_endpoint** por el punto de conexión del proyecto que copió anteriormente. Observa que el primer y segundo modelo usado en el ejercicio son **gpt-4o** y **gpt-4o-mini**, respectivamente.
 1. *Después* de reemplazar el marcador de posición, en el editor de código, usa el comando **CTRL+S** o **clic con el botón derecho > Guardar** para guardar los cambios y, a continuación, usa el comando **CTRL+Q** o **clic con el botón derecho > Salir** para cerrar el editor de código mientras mantienes abierta la línea de comandos de Cloud Shell.
 
 ## Envío de indicaciones a los modelos implementados
@@ -147,7 +147,18 @@ Ahora ejecutarás varios scripts que envían indicaciones diferentes a los model
 
 El script codificará la imagen usada en este ejercicio en una dirección URL de datos. Esta dirección URL se usará para insertar la imagen directamente en la solicitud de finalización del chat junto con el primer mensaje de texto. A continuación, el script generará la respuesta del modelo y la agregará al historial de chat y, a continuación, enviará un segundo mensaje. El segundo mensaje se envía y almacena para hacer que las métricas observadas más adelante sean más importantes, pero también puedes quitar la marca de comentario de la sección opcional del código para que también tenga la segunda respuesta como salida.
 
-1. En el panel de línea de comandos de Cloud Shell debajo del editor de código, escribe el siguiente comando para ejecutar el **primer** script:
+1. En el panel de línea de comandos de Cloud Shell, escribe el siguiente comando para iniciar sesión en Azure.
+
+    ```
+   az login
+    ```
+
+    **<font color="red">Debes iniciar sesión en Azure, aunque la sesión de Cloud Shell ya esté autenticada.</font>**
+
+    > **Nota**: en la mayoría de los escenarios, el uso de *inicio de sesión de az* será suficiente. Sin embargo, si tienes suscripciones en varios inquilinos, es posible que tengas que especificar el inquilino mediante el parámetro *--tenant*. Consulta [Inicio de sesión en Azure de forma interactiva mediante la CLI de Azure](https://learn.microsoft.com/cli/azure/authenticate-azure-cli-interactively) para obtener más información.
+    
+1. Cuando se te solicite, sigue las instrucciones para abrir la página de inicio de sesión en una nueva pestaña y escribe el código de autenticación proporcionado y las credenciales de Azure. A continuación, completa el proceso de inicio de sesión en la línea de comandos y selecciona la suscripción que contiene el centro de Fundición de IA de Azure si se te solicita.
+1. Después de iniciar sesión, escribe el siguiente comando para ejecutar la aplicación:
 
     ```powershell
    python model1.py
@@ -169,7 +180,7 @@ El script codificará la imagen usada en este ejercicio en una dirección URL de
 
 Por último, ejecutarás un tercer script que trazará el número de tokens procesados a lo largo del tiempo para cada modelo. Estos datos se obtienen de Azure Monitor.
 
-1. Antes de ejecutar el último script, debes copiar el identificador de recurso de los servicios de Azure AI desde Azure Portal. Ve a la página de información general del recurso de los servicios de Azure AI y selecciona **Vista JSON**. Copia el identificador de recurso y reemplaza el marcador de posición `your_resource_id` en el archivo de código:
+1. Antes de ejecutar el último script, debe copiar el identificador de recurso del recurso de Fundición de IA de Azure desde Azure Portal. Vaya a la página de información general del recurso de Fundición de IA de Azure y seleccione **Vista JSON**. Copia el identificador de recurso y reemplaza el marcador de posición `your_resource_id` en el archivo de código:
 
     ```powershell
    code plot.py

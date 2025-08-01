@@ -25,44 +25,26 @@ Para completar las tareas de este ejercicio, necesitas:
 - Un modelo implementado (como GPT-4o),
 - Un recurso de Application Insights conectado.
 
-### Creación de un centro y un proyecto de Fundición de IA de Azure
+### Implementación de un modelo en un proyecto de Fundición de IA de Azure
 
-Para configurar rápidamente un centro y un proyecto, se proporcionan instrucciones sencillas para usar la interfaz de usuario del Portal de la Fundición de IA de Azure.
+Para configurar rápidamente un proyecto de Fundición de IA de Azure, a continuación se proporcionan instrucciones sencillas para usar la interfaz de usuario del Portal de la Fundición de IA de Azure.
 
 1. En un explorador web, abre el [Portal de la Fundición de IA de Azure](https://ai.azure.com) en `https://ai.azure.com` e inicia sesión con tus credenciales de Azure.
-1. En la página principal, selecciona **+Crear proyecto**.
-1. En el asistente para **crear un proyecto**, escribe un nombre válido y si se te sugiere un centro existente, elige la opción para crear uno nuevo. A continuación, revisa los recursos de Azure que se crearán automáticamente para admitir el centro y el proyecto.
-1. Selecciona **Personalizar** y especifica la siguiente configuración para el centro:
-    - **Nombre del centro**: *un nombre válido para el centro*
+1. En la página principal, en la sección **Explorar modelos y funcionalidades**, busca el modelo `gpt-4o`, que usaremos en nuestro proyecto.
+1. En los resultados de la búsqueda, selecciona el modelo **gpt-4o** para ver sus detalles y, a continuación, en la parte superior de la página del modelo, selecciona **Usar este modelo**.
+1. Cuando se te pida que crees un proyecto, escribe un nombre válido para el proyecto y expande **Opciones avanzadas**.
+1. Selecciona **Personalizar** y especifica la siguiente configuración para el proyecto:
+    - **Recurso de Fundición de IA de Azure**: *un nombre válido para el recurso de Fundición de IA de Azure*
     - **Suscripción**: *suscripción a Azure*
     - **Grupo de recursos**: *crea o selecciona un grupo de recursos*
-    - **Ubicación**: selecciona **Ayudarme a elegir** y, a continuación, selecciona **gpt-4o** en la ventana Asistente de ubicación y usa la región recomendada\*
-    - **Conectar Servicios de Azure AI o Azure OpenAI**: *crea un nuevo recurso de servicios de IA*
-    - **Conectar Búsqueda de Azure AI**: omite la conexión
+    - **Región**: *selecciona cualquier ubicación compatible con los servicios de IA***\*
 
-    > \* Los recursos de Azure OpenAI están restringidos por cuotas de modelo regionales. En caso de que se alcance un límite de cuota más adelante en el ejercicio, es posible que tengas que crear otro recurso en otra región.
+    > \* Algunos de los recursos de Azure AI están restringidos por cuotas de modelo regionales. En caso de que se alcance un límite de cuota más adelante en el ejercicio, es posible que tengas que crear otro recurso en otra región.
 
-1. Selecciona **Siguiente** y revisa tu configuración. Luego, selecciona **Crear** y espera a que se complete el proceso.
-
-### Implementación de un modelo
-
-Para generar datos que puedas supervisar, primero deberás implementar un modelo e interactuar con él. En las instrucciones se te pide que implementes un modelo GPT-4o, pero **puedes usar cualquier modelo** de la colección de Azure OpenAI Service que esté disponible.
-
-1. En el menú de la izquierda, en la sección **Mis recursos**, selecciona la página **Modelos y puntos de conexión**.
-1. En el menú **Implementar modelo**, selecciona **Implementar modelo base**.
-1. Selecciona el modelo **gpt-4o** en la lista e impleméntalo con la siguiente configuración; para ello, selecciona **Personalizar** en los detalles de implementación:
-    - **Nombre de implementación**: *nombre válido para la implementación de modelo*
-    - **Tipo de implementación**: estándar
-    - **Actualización automática de la versión**: habilitado
-    - **** Versión del modelo: *selecciona la versión disponible más reciente*
-    - **Recurso de IA conectado**: *selecciona tu conexión de recursos de Azure OpenAI*
-    - **Límite de frecuencia de tokens por minuto (miles)**: 5000
-    - **Filtro de contenido**: DefaultV2
-    - **Habilitación de la cuota dinámica**: deshabilitada
-
-    > **Nota**: reducir el TPM ayuda a evitar el uso excesivo de la cuota disponible en la suscripción que está usando. 5000 TPM debe ser suficiente para los datos que se usan en este ejercicio. Si la cuota disponible es inferior a esta, podrás completar el ejercicio, pero se pueden producir errores si se supera el límite de velocidad.
-
-1. Espera a que la implementación se complete.
+1. Selecciona **Crear** y espera a que se cree el proyecto, incluida la implementación del modelo gpt-4 que seleccionaste.
+1. En el panel de navegación de la izquierda, seleccione **Información general** para ver la página principal del proyecto.
+1. En el área **Puntos de conexión y claves**, asegúrese de que la biblioteca **Fundición de IA de Azure** esté seleccionada y vea el **punto de conexión del proyecto de Fundición de IA de Azure**.
+1. **Guarde** el punto de conexión en un cuaderno. Usarás este punto de conexión para conectarte al proyecto en una aplicación cliente.
 
 ### Conectar Application Insights
 
@@ -82,9 +64,6 @@ Te conectarás al proyecto de Fundición de IA de Azure desde Azure Cloud Shell 
 
 Empieza por recuperar la información necesaria para autenticarte para interactuar con el modelo implementado. A continuación, accederás a Azure Cloud Shell y actualizarás el código de la aplicación de IA generativa.
 
-1. En el Portal de la Fundición de IA de Azure, mira la página **Información general** del proyecto.
-1. En el área **Detalles del proyecto**, anota la **Cadena de conexión del proyecto**.
-1. **Guarda** la cadena en un Bloc de notas. Usarás esta cadena de conexión para conectarte al proyecto en una aplicación cliente.
 1. Abre una nueva pestaña del explorador (mantén el Portal de la Fundición de IA de Azure abierto en la pestaña existente).
 1. En la nueva pestaña, explora [Azure Portal](https://portal.azure.com) en `https://portal.azure.com` e inicia sesión con tus credenciales de Azure, si se te solicita.
 1. Usa el botón **[\>_]** situado a la derecha de la barra de búsqueda en la parte superior de la página para crear una nueva instancia de Cloud Shell en Azure Portal, para lo que deberás seleccionar un entorno de ***PowerShell*** sin almacenamiento en tu suscripción.
@@ -112,7 +91,7 @@ Empieza por recuperar la información necesaria para autenticarte para interactu
     ```
    python -m venv labenv
    ./labenv/bin/Activate.ps1
-   pip install python-dotenv azure-identity azure-ai-projects azure-ai-inference azure-monitor-opentelemetry
+   pip install python-dotenv openai azure-identity azure-ai-projects azure-ai-inference azure-monitor-opentelemetry
     ```
 
 1. Escribe el siguiente comando para abrir el archivo de configuración que se ha proporcionado:
@@ -125,7 +104,7 @@ Empieza por recuperar la información necesaria para autenticarte para interactu
 
 1. En el archivo de código:
 
-    1. Reemplaza el marcador de posición **your_project_connection_string** por la cadena de conexión del proyecto (copiado de la página **Información general** del proyecto en el Portal de la Fundición de IA de Azure).
+    1. En el archivo de código, reemplaza el marcador de posición **your_project_endpoint** por el punto de conexión de tu proyecto (copiado de la página **Información general** del proyecto del portal de la Fundición de IA de Azure).
     1. Reemplaza el marcador de posición **your_model_deployment** por el nombre que asignaste a la implementación del modelo GPT-4o (de manera predeterminada `gpt-4o`).
 
 1. *Después* de reemplazar el marcador de posición, en el editor de código, usa el comando **CTRL+S** o **clic con el botón derecho > Guardar** para **guardar los cambios** y, a continuación, usa el comando **CTRL+Q** o **clic con el botón derecho > Salir** para cerrar el editor de código mientras mantienes abierta la línea de comandos de Cloud Shell.
@@ -152,28 +131,39 @@ Agregará estas tres partes a un script inicial.
 1. Pega el siguiente código debajo de este comentario:
 
     ```
+   # Function to call the model and handle tracing
    def call_model(system_prompt, user_prompt, span_name):
-        with tracer.start_as_current_span(span_name) as span:
-            span.set_attribute("session.id", SESSION_ID)
-            span.set_attribute("prompt.user", user_prompt)
-            start_time = time.time()
+       with tracer.start_as_current_span(span_name) as span:
+           span.set_attribute("session.id", SESSION_ID)
+           span.set_attribute("prompt.user", user_prompt)
+           start_time = time.time()
     
-            response = chat_client.complete(
-                model=model_name,
-                messages=[SystemMessage(system_prompt), UserMessage(user_prompt)]
-            )
+           response = chat_client.chat.completions.create(
+               model=model_deployment,
+               messages=[
+                   { 
+                       "role": "system", 
+                       "content": system_prompt 
+                   },
+                   { 
+                       "role": "user", 
+                       "content": user_prompt
+                   }
+               ]
+           )
     
-            duration = time.time() - start_time
-            output = response.choices[0].message.content
-            span.set_attribute("response.time", duration)
-            span.set_attribute("response.tokens", len(output.split()))
-            return output
+           duration = time.time() - start_time
+           output = response.choices[0].message.content
+           span.set_attribute("response.time", duration)
+           span.set_attribute("response.tokens", len(output.split()))
+           return output
     ```
 
 1. En el script, busca **# Function to recommend a hike based on user preferences**.
 1. Pega el siguiente código debajo de este comentario:
 
     ```
+   # Function to recommend a hike based on user preferences 
    def recommend_hike(preferences):
         with tracer.start_as_current_span("recommend_hike") as span:
             prompt = f"""
@@ -213,7 +203,18 @@ Agregará estas tres partes a un script inicial.
     ```
 
 1. **Guarda los cambios** realizados en el script.
-1. En el panel de línea de comandos de Cloud Shell, debajo del editor de código, escribe el siguiente comando para **ejecutar el script**:
+1. En el panel de línea de comandos de Cloud Shell, escribe el siguiente comando para iniciar sesión en Azure.
+
+    ```
+   az login
+    ```
+
+    **<font color="red">Debes iniciar sesión en Azure, aunque la sesión de Cloud Shell ya esté autenticada.</font>**
+
+    > **Nota**: en la mayoría de los escenarios, el uso de *inicio de sesión de az* será suficiente. Sin embargo, si tienes suscripciones en varios inquilinos, es posible que tengas que especificar el inquilino mediante el parámetro *--tenant*. Consulta [Inicio de sesión en Azure de forma interactiva mediante la CLI de Azure](https://learn.microsoft.com/cli/azure/authenticate-azure-cli-interactively) para obtener más información.
+    
+1. Cuando se te solicite, sigue las instrucciones para abrir la página de inicio de sesión en una nueva pestaña y escribe el código de autenticación proporcionado y las credenciales de Azure. A continuación, completa el proceso de inicio de sesión en la línea de comandos y selecciona la suscripción que contiene el centro de Fundición de IA de Azure si se te solicita.
+1. Después de iniciar sesión, escribe el siguiente comando para ejecutar la aplicación:
 
     ```
    python start-prompt.py
