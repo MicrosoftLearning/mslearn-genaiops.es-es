@@ -90,7 +90,7 @@ Empieza por recuperar la información necesaria para autenticarte para interactu
     ```
    python -m venv labenv
    ./labenv/bin/Activate.ps1
-   pip install python-dotenv openai azure-identity azure-ai-projects azure-ai-inference azure-monitor-opentelemetry
+   pip install python-dotenv openai azure-identity azure-ai-projects opentelemetry-instrumentation-openai-v2 azure-monitor-opentelemetry
     ```
 
 1. Escribe el siguiente comando para abrir el archivo de configuración que se ha proporcionado:
@@ -184,11 +184,12 @@ Para ver los datos recopilados de las interacciones del modelo, tendrás acceso 
 ### Ve a Azure Monitor desde el Portal de la Fundición de IA de Azure
 
 1. Ve a la pestaña del explorador con el **Portal de la Fundición de IA de Azure** abierto.
-1. Usa el menú de la izquierda y selecciona **Seguimiento**.
-1. Selecciona el vínculo en la parte superior, que indica **Consultar el panel Información para aplicaciones de IA generativa**. El vínculo abrirá Azure Monitor en una nueva pestaña.
-1. Revisa la **información general** que proporciona datos resumidos de las interacciones con el modelo implementado.
+1. Use el menú de la izquierda y seleccione **Supervisión**.
+1. Seleccione el **uso de recursos** y revise los datos resumidos de las interacciones con el modelo implementado.
 
-## Interpretación de las métricas de supervisión en Azure Monitor
+> **Nota**: También puede seleccionar **Explorador de métricas de Azure Monitor** en la parte inferior de la página Supervisión para obtener una vista completa de todas las métricas disponibles. El vínculo abrirá Azure Monitor en una nueva pestaña.
+
+## Interpretación de las métricas de supervisión
 
 Ahora es el momento de profundizar en los datos y empezar a interpretar lo que dicen.
 
@@ -196,45 +197,41 @@ Ahora es el momento de profundizar en los datos y empezar a interpretar lo que d
 
 Céntrate primero en la sección **uso de tokens** y revisa las métricas siguientes:
 
-- **Tokens de indicaciones**: el número total de tokens usados en la entrada (las indicaciones enviadas) en todas las llamadas del modelo.
-
-> Piensa en esto como el *coste de plantear* al modelo una pregunta.
-
-- **Tokens de finalización**: el número de tokens que devolvió el modelo como salida, básicamente la longitud de las respuestas.
-
-> Los tokens de finalización generados suelen representar la mayor parte del uso y el coste de los tokens, especialmente para respuestas largas o detalladas.
-
-- **Total de tokens**: los tokens de indicación totales combinados y los tokens de finalización.
-
-> Métrica más importante para la facturación y el rendimiento, ya que impulsa la latencia y el coste.
-
-- **Total de llamadas**: número de solicitudes de inferencia independientes, que es la cantidad de veces que se llamó al modelo.
+- **Solicitudes totales**: número de solicitudes de inferencia independientes, que es la cantidad de veces que se llamó al modelo.
 
 > Resulta útil para analizar el rendimiento y comprender el coste medio por llamada.
 
+- **Número total de tokens**: los tokens de indicación totales combinados y los tokens de finalización.
+
+> Métrica más importante para la facturación y el rendimiento, ya que impulsa la latencia y el coste.
+
+- **Recuento de tokens de indicación**: número total de tokens usados en la entrada (las indicaciones enviadas) en todas las llamadas del modelo.
+
+> Piensa en esto como el *coste de plantear* al modelo una pregunta.
+
+- **Recuento de tokens de finalización**: número de tokens que devolvió el modelo como salida, básicamente la longitud de las respuestas.
+
+> Los tokens de finalización generados suelen representar la mayor parte del uso y el coste de los tokens, especialmente para respuestas largas o detalladas.
+
 ### Comparación de las indicaciones individuales
 
-Desplázate hacia abajo para buscar los **intervalos de IA generativa**, que se visualizan como una tabla en la que cada indicación se representa como una nueva fila de datos. Revisa y compara el contenido de las columnas siguientes:
-
-- **Estado**: indica si una llamada de modelo se realizó correctamente o no.
-
-> Úsalo para identificar indicaciones problemáticas o errores de configuración. Es probable que se produzca un error en la última indicación porque era demasiado larga.
-
-- **Duración**: muestra cuánto tiempo tardó el modelo en responder, en milisegundos.
-
-> Compara entre filas para explorar qué patrones de indicación dan lugar a tiempos de procesamiento más largos.
+1. Usa el menú de la izquierda y selecciona **Seguimiento**. Expanda cada intervalo de inteligencia artificial de generación **generate_completion** para ver sus intervalos secundarios. Cada indicación se representa como una nueva fila de datos. Revisa y compara el contenido de las columnas siguientes:
 
 - **Entrada**: muestra el mensaje del usuario que se envió al modelo.
 
 > Usa esta columna para evaluar qué formulaciones de indicaciones son eficaces o problemáticas.
 
-- **Sistema**: muestra el mensaje del sistema usado en la indicación (si hay alguno).
-
-> Compara las entradas para evaluar el impacto del uso o el cambio de los mensajes del sistema.
-
 - **Salida**: contiene la respuesta del modelo.
 
 > Úsalo para evaluar el nivel de detalle, la relevancia y la coherencia. Especialmente en relación con los recuentos de tokens y la duración.
+
+- **Duración**: muestra cuánto tiempo tardó el modelo en responder, en milisegundos.
+
+> Compara entre filas para explorar qué patrones de indicación dan lugar a tiempos de procesamiento más largos.
+
+- **Correcto**: indica si una llamada al modelo se realizó correctamente o no.
+
+> Úsalo para identificar indicaciones problemáticas o errores de configuración. Es probable que se produzca un error en la última indicación porque era demasiado larga.
 
 ## (OPCIONAL) Creación de una alerta
 
